@@ -1,0 +1,7 @@
+target/
+.settings/
+.classpath
+.project
+Servers/
+*.log
+src/main/resources/application.properties
