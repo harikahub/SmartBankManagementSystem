@@ -105,15 +105,15 @@ public class AppConfig implements WebMvcConfigurer {
         emf.setJpaVendorAdapter(vendorAdapter);
 
         Properties properties = new Properties();
-
+        
         properties.put(
                 "hibernate.dialect",
-                "org.hibernate.dialect.MySQLDialect"
+                "org.hibernate.dialect.MariaDBDialect"
         );
 
         properties.put(
                 "hibernate.hbm2ddl.auto",
-                "update"
+                "none"
         );
 
         properties.put(
@@ -180,7 +180,7 @@ public class AppConfig implements WebMvcConfigurer {
 
         props.put(
                 "mail.debug",
-                "true"
+                "false"
         );
 
         return mailSender;
