@@ -4,15 +4,9 @@ import java.util.List;
 
 import com.smartbank.entity.BankTransaction;
 
-public interface EmailService {
+public interface PdfService {
 
-    void sendOtp(
-            String email,
-            String otp
-    );
-
-    void sendMiniStatement(
-            String email,
+    byte[] generateStatement(
             String customerName,
             String accountNumber,
             List<BankTransaction> transactions

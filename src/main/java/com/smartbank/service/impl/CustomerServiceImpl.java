@@ -1,3 +1,4 @@
+
 package com.smartbank.service.impl;
 
 import java.time.LocalDateTime;
@@ -33,6 +34,10 @@ public class CustomerServiceImpl implements CustomerService {
         this.otpRepository = otpRepository;
         this.emailService = emailService;
     }
+
+    // =========================
+    // REGISTER
+    // =========================
 
     @Override
     public Customer register(Customer customer) {
@@ -73,6 +78,11 @@ public class CustomerServiceImpl implements CustomerService {
         return savedCustomer;
     }
 
+
+    // =========================
+    // FIND CUSTOMER
+    // =========================
+
     @Override
     public Customer findByEmail(String email) {
 
@@ -81,6 +91,11 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElse(null);
     }
 
+
+    // =========================
+    // VERIFY REGISTRATION OTP
+    // =========================
+
     @Override
     public boolean verifyCustomer(
             String email,
@@ -88,8 +103,8 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer =
                 customerRepository
-                .findByEmail(email)
-                .orElse(null);
+                        .findByEmail(email)
+                        .orElse(null);
 
         if (customer == null) {
             return false;
@@ -97,17 +112,14 @@ public class CustomerServiceImpl implements CustomerService {
 
         OtpVerification otpVerification =
                 otpRepository
-                .findTopByEmailOrderByIdDesc(email)
-                .orElse(null);
+                        .findTopByEmailOrderByIdDesc(email)
+                        .orElse(null);
 
         if (otpVerification == null) {
             return false;
         }
 
-        if (!otpVerification
-                .getOtp()
-                .equals(otp)) {
-
+        if (!otpVerification.getOtp().equals(otp)) {
             return false;
         }
 
@@ -125,14 +137,78 @@ public class CustomerServiceImpl implements CustomerService {
         return true;
     }
 
+
+    // =========================
+    // RESEND REGISTRATION OTP
+    // =========================
+
+    @Override
+    public boolean resendRegistrationOtp(
+            String email) {
+
+        Customer customer =
+                customerRepository
+                        .findByEmail(email)
+                        .orElse(null);
+
+        if (customer == null) {
+            return false;
+        }
+
+        // Already verified customers
+        // should not receive registration OTP
+        if (customer.isVerified()) {
+            return false;
+        }
+
+        String otp =
+                String.valueOf(
+                        100000 +
+                        new Random().nextInt(900000));
+
+        OtpVerification otpVerification =
+                new OtpVerification();
+
+        otpVerification.setEmail(email);
+
+        otpVerification.setOtp(otp);
+
+        otpVerification.setExpiryTime(
+                LocalDateTime.now().plusMinutes(5));
+
+        otpRepository.save(otpVerification);
+
+        System.out.println(
+                "REGISTRATION OTP SAVED: " + otp);
+
+        System.out.println(
+                "REGISTRATION OTP EMAIL SENDING STARTED: "
+                + email);
+
+        emailService.sendOtp(
+                email,
+                otp);
+
+        System.out.println(
+                "REGISTRATION OTP EMAIL SENDING COMPLETED: "
+                + email);
+
+        return true;
+    }
+
+
+    // =========================
+    // GENERATE LOGIN OTP
+    // =========================
+
     @Override
     public boolean generateLoginOtp(
             String email) {
 
         Customer customer =
                 customerRepository
-                .findByEmail(email)
-                .orElse(null);
+                        .findByEmail(email)
+                        .orElse(null);
 
         if (customer == null ||
                 !customer.isVerified()) {
@@ -157,12 +233,26 @@ public class CustomerServiceImpl implements CustomerService {
 
         otpRepository.save(otpVerification);
 
+        System.out.println(
+                "OTP SAVED: " + otp);
+
+        System.out.println(
+                "OTP EMAIL SENDING STARTED: " + email);
+
         emailService.sendOtp(
                 email,
                 otp);
 
+        System.out.println(
+                "OTP EMAIL SENDING COMPLETED: " + email);
+
         return true;
     }
+
+
+    // =========================
+    // VERIFY LOGIN OTP
+    // =========================
 
     @Override
     public boolean verifyLoginOtp(
@@ -171,17 +261,14 @@ public class CustomerServiceImpl implements CustomerService {
 
         OtpVerification otpVerification =
                 otpRepository
-                .findTopByEmailOrderByIdDesc(email)
-                .orElse(null);
+                        .findTopByEmailOrderByIdDesc(email)
+                        .orElse(null);
 
         if (otpVerification == null) {
             return false;
         }
 
-        if (!otpVerification
-                .getOtp()
-                .equals(otp)) {
-
+        if (!otpVerification.getOtp().equals(otp)) {
             return false;
         }
 
@@ -195,6 +282,11 @@ public class CustomerServiceImpl implements CustomerService {
         return true;
     }
 
+
+    // =========================
+    // LOGIN
+    // =========================
+
     @Override
     public boolean login(
             String email,
@@ -202,8 +294,8 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer =
                 customerRepository
-                .findByEmail(email)
-                .orElse(null);
+                        .findByEmail(email)
+                        .orElse(null);
 
         if (customer == null) {
             return false;
@@ -217,6 +309,11 @@ public class CustomerServiceImpl implements CustomerService {
                 password,
                 customer.getPassword());
     }
+
+
+    // =========================
+    // GET ALL CUSTOMERS
+    // =========================
 
     @Override
     public List<Customer> getAllCustomers() {

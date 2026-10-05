@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.smartbank.entity.BankTransaction;
 import com.smartbank.entity.Customer;
 import com.smartbank.service.CustomerService;
+import com.smartbank.service.EmailService;
 import com.smartbank.service.TransactionService;
 
 import jakarta.servlet.http.HttpSession;
@@ -19,19 +20,21 @@ public class TransactionController {
 
     private final TransactionService transactionService;
     private final CustomerService customerService;
+    private final EmailService emailService;
 
     public TransactionController(
             TransactionService transactionService,
-            CustomerService customerService) {
+            CustomerService customerService,
+            EmailService emailService) {
 
         this.transactionService = transactionService;
         this.customerService = customerService;
+        this.emailService = emailService;
     }
 
-
-    // =========================
-    // MINI STATEMENT
-    // =========================
+    // =====================================================
+    // MINI STATEMENT PAGE
+    // =====================================================
 
     @GetMapping("/transactions")
     public String transactions(
@@ -45,58 +48,73 @@ public class TransactionController {
             return "redirect:/login";
         }
 
-        // Get latest customer/account details from database
         Customer currentCustomer =
                 customerService.findByEmail(
                         customer.getEmail());
 
         if (currentCustomer == null) {
+
             session.invalidate();
+
             return "redirect:/login";
         }
 
-        // Update session with latest account balance
         session.setAttribute(
                 "customer",
                 currentCustomer);
 
         List<BankTransaction> transactions =
                 transactionService.getMiniStatement(
-                        currentCustomer.getAccount().getId());
+                        currentCustomer
+                                .getAccount()
+                                .getId());
 
         model.addAttribute(
                 "customer",
                 currentCustomer);
 
         model.addAttribute(
+                "account",
+                currentCustomer.getAccount());
+
+        model.addAttribute(
                 "transactions",
                 transactions);
 
-        return "transactions";
+        return "mini-statement";
     }
 
-
-    // =========================
-    // SEND MINI STATEMENT EMAIL
-    // =========================
+    // =====================================================
+    // SEND MINI STATEMENT - POST
+    // =====================================================
 
     @PostMapping("/mini-statement/email")
     public String sendMiniStatementEmailPost(
             HttpSession session,
             Model model) {
 
-        return sendStatement(session, model);
+        return sendStatement(
+                session,
+                model);
     }
 
+    // =====================================================
+    // SEND MINI STATEMENT - GET
+    // =====================================================
 
     @GetMapping("/mini-statement/email")
     public String sendMiniStatementEmailGet(
             HttpSession session,
             Model model) {
 
-        return sendStatement(session, model);
+        return sendStatement(
+                session,
+                model);
     }
 
+    // =====================================================
+    // COMMON STATEMENT EMAIL METHOD
+    // =====================================================
 
     private String sendStatement(
             HttpSession session,
@@ -109,28 +127,46 @@ public class TransactionController {
             return "redirect:/login";
         }
 
-        // Refresh customer/account from database
         Customer currentCustomer =
                 customerService.findByEmail(
                         customer.getEmail());
 
         if (currentCustomer == null) {
+
             session.invalidate();
+
             return "redirect:/login";
         }
 
-        // Update session
         session.setAttribute(
                 "customer",
                 currentCustomer);
 
         List<BankTransaction> transactions =
                 transactionService.getMiniStatement(
-                        currentCustomer.getAccount().getId());
+                        currentCustomer
+                                .getAccount()
+                                .getId());
+
+        // =================================================
+        // SEND PDF STATEMENT TO CUSTOMER EMAIL
+        // =================================================
+
+        emailService.sendMiniStatement(
+                currentCustomer.getEmail(),
+                currentCustomer.getFullName(),
+                currentCustomer
+                        .getAccount()
+                        .getAccountNumber(),
+                transactions);
 
         model.addAttribute(
                 "customer",
                 currentCustomer);
+
+        model.addAttribute(
+                "account",
+                currentCustomer.getAccount());
 
         model.addAttribute(
                 "transactions",
@@ -138,8 +174,8 @@ public class TransactionController {
 
         model.addAttribute(
                 "message",
-                "Mini statement email request sent successfully.");
+                "Your account statement has been sent to your email successfully.");
 
-        return "transactions";
+        return "mini-statement";
     }
 }

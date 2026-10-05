@@ -2,83 +2,132 @@ package com.smartbank.service.impl;
 
 import java.util.List;
 
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.smartbank.entity.BankTransaction;
 import com.smartbank.service.EmailService;
+import com.smartbank.service.PdfService;
+
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    private final JavaMailSender mailSender;
+    @Autowired
+    private JavaMailSender mailSender;
 
-    public EmailServiceImpl(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
+    @Autowired
+    private PdfService pdfService;
 
     @Override
-    public void sendOtp(String email, String otp) {
+    public void sendOtp(
+            String email,
+            String otp) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        try {
 
-        message.setTo(email);
-        message.setSubject("Smart Bank - OTP Verification");
+            MimeMessage message =
+                    mailSender.createMimeMessage();
 
-        message.setText(
-                "Dear Customer,\n\n"
-                + "Your Smart Bank OTP is: " + otp + "\n\n"
-                + "This OTP is valid for 5 minutes.\n\n"
-                + "Please do not share this OTP with anyone.\n\n"
-                + "Regards,\n"
-                + "Smart Bank Team"
-        );
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(
+                            message,
+                            true
+                    );
 
-        mailSender.send(message);
+            helper.setTo(email);
+
+            helper.setSubject(
+                    "SmartBank OTP Verification"
+            );
+
+            String body =
+                    "Dear Customer,\n\n"
+                    + "Your SmartBank OTP is: "
+                    + otp
+                    + "\n\n"
+                    + "This OTP is valid for a limited time.\n"
+                    + "Please do not share this OTP with anyone.\n\n"
+                    + "Regards,\n"
+                    + "SmartBank Team";
+
+            helper.setText(body);
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Failed to send OTP email",
+                    e
+            );
+        }
     }
 
     @Override
     public void sendMiniStatement(
             String email,
+            String customerName,
+            String accountNumber,
             List<BankTransaction> transactions) {
 
-        StringBuilder statement = new StringBuilder();
+        try {
 
-        statement.append("SMART BANK - MINI STATEMENT\n\n");
-        statement.append("Last 10 Transactions\n\n");
+            byte[] pdfBytes =
+                    pdfService.generateStatement(
+                            customerName,
+                            accountNumber,
+                            transactions
+                    );
 
-        for (BankTransaction transaction : transactions) {
+            MimeMessage message =
+                    mailSender.createMimeMessage();
 
-            statement.append("Type: ")
-                    .append(transaction.getTransactionType())
-                    .append("\n");
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(
+                            message,
+                            true
+                    );
 
-            statement.append("Amount: ")
-                    .append(transaction.getAmount())
-                    .append("\n");
+            helper.setTo(email);
 
-            statement.append("Description: ")
-                    .append(transaction.getDescription())
-                    .append("\n");
+            helper.setSubject(
+                    "SmartBank Account Statement"
+            );
 
-            statement.append("Date: ")
-                    .append(transaction.getTransactionDate())
-                    .append("\n");
+            String body =
+                    "Dear " + customerName + ",\n\n"
+                    + "Please find your SmartBank account "
+                    + "statement attached with this email.\n\n"
+                    + "Account Number: "
+                    + accountNumber
+                    + "\n\n"
+                    + "Thank you for banking with SmartBank.\n\n"
+                    + "Regards,\n"
+                    + "SmartBank Team";
 
-            statement.append("Balance: ")
-                    .append(transaction.getBalanceAfterTransaction())
-                    .append("\n");
+            helper.setText(body);
 
-            statement.append("-------------------------\n");
+            ByteArrayResource pdfResource =
+                    new ByteArrayResource(pdfBytes);
+
+            helper.addAttachment(
+                    "SmartBank_Statement.pdf",
+                    pdfResource
+            );
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Failed to send account statement email",
+                    e
+            );
         }
-
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        message.setTo(email);
-        message.setSubject("Smart Bank - Mini Statement");
-        message.setText(statement.toString());
-
-        mailSender.send(message);
     }
 }

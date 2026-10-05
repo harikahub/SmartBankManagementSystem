@@ -2,305 +2,525 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Mini Statement - Smart Bank</title>
+<title>SmartBank - Mini Statement</title>
 
-    <style>
+<style>
 
-        * {
-            box-sizing: border-box;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f7fb;
-            color: #1f2937;
-        }
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
 
-        .container {
-            width: 92%;
-            max-width: 1150px;
-            margin: 40px auto;
-        }
+    background:
+        radial-gradient(circle at top left, #d8f5f2, transparent 35%),
+        radial-gradient(circle at bottom right, #dcecff, transparent 35%),
+        linear-gradient(135deg, #eefbfa, #edf4ff);
 
-        /* Header */
+    color: #17324d;
+    padding: 30px;
+}
 
-        .header {
-            background: linear-gradient(135deg, #0d47a1, #1565c0);
-            color: white;
-            padding: 30px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            box-shadow: 0 8px 25px rgba(13, 71, 161, 0.18);
-        }
+/* =========================
+   MAIN CONTAINER
+========================= */
 
-        .header h1 {
-            margin: 0 0 8px;
-            font-size: 30px;
-        }
+.container {
+    max-width: 1150px;
+    margin: 0 auto;
+}
 
-        .header p {
-            margin: 0;
-            opacity: 0.9;
-            font-size: 15px;
-        }
+/* =========================
+   HEADER
+========================= */
 
-        /* Success Message */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
 
-        .success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 14px 18px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 5px solid #43a047;
-            font-size: 14px;
-        }
+.brand {
+    font-size: 30px;
+    font-weight: bold;
+    color: #007c91;
+    letter-spacing: 0.5px;
+}
 
-        /* Account Card */
+.brand span {
+    color: #00a6a6;
+}
 
-        .account-info {
-            background: white;
-            padding: 22px;
-            border-radius: 14px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-        }
+.back-btn {
+    text-decoration: none;
+    background: white;
+    color: #007c91;
 
-        .account-details {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+    padding: 11px 20px;
 
-        .account-label {
-            color: #6b7280;
-            font-size: 13px;
-        }
+    border-radius: 12px;
 
-        .account-number {
-            font-size: 18px;
-            font-weight: bold;
-            color: #0d47a1;
-        }
+    font-weight: bold;
 
-        .balance-box {
-            text-align: right;
-        }
+    box-shadow:
+        0 6px 18px rgba(0, 90, 120, 0.10);
 
-        .balance-label {
-            color: #6b7280;
-            font-size: 13px;
-            margin-bottom: 5px;
-        }
+    transition: 0.3s;
+}
 
-        .balance {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1b5e20;
-        }
+.back-btn:hover {
+    transform: translateY(-2px);
 
-        /* Statement Section */
+    box-shadow:
+        0 10px 22px rgba(0, 90, 120, 0.16);
+}
 
-        .statement-card {
-            background: white;
-            border-radius: 14px;
-            padding: 22px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-            overflow: hidden;
-        }
+/* =========================
+   MAIN CARD
+========================= */
 
-        .statement-title {
-            margin: 0 0 18px;
-            color: #0d47a1;
-            font-size: 20px;
-        }
+.card {
+    background: rgba(255, 255, 255, 0.94);
 
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
+    border-radius: 25px;
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 750px;
-        }
+    padding: 32px;
 
-        th {
-            background: #0d47a1;
-            color: white;
-            padding: 14px;
-            text-align: left;
-            font-size: 14px;
-            white-space: nowrap;
-        }
+    box-shadow:
+        0 20px 50px rgba(0, 90, 120, 0.13);
 
-        td {
-            padding: 14px;
-            border-bottom: 1px solid #edf0f4;
-            font-size: 14px;
-        }
+    border: 1px solid rgba(255, 255, 255, 0.7);
 
-        tbody tr:hover {
-            background: #f8faff;
-        }
+    backdrop-filter: blur(12px);
+}
 
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
+/* =========================
+   TITLE
+========================= */
 
-        /* Transaction Type */
+.title {
+    text-align: center;
 
-        .type-badge {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
+    font-size: 31px;
 
-        .debit {
-            color: #c62828;
-            background: #ffebee;
-        }
+    color: #006d82;
 
-        .credit {
-            color: #2e7d32;
-            background: #e8f5e9;
-        }
+    margin-bottom: 8px;
+}
 
-        /* Amount */
+.subtitle {
+    text-align: center;
 
-        .amount {
-            font-weight: bold;
-            white-space: nowrap;
-        }
+    color: #64748b;
 
-        .debit-amount {
-            color: #c62828;
-        }
+    margin-bottom: 28px;
 
-        .credit-amount {
-            color: #2e7d32;
-        }
+    font-size: 15px;
+}
 
-        .balance-after {
-            font-weight: 600;
-            white-space: nowrap;
-        }
+/* =========================
+   SUCCESS MESSAGE
+========================= */
 
-        /* Empty State */
+.success-message {
+    display: flex;
 
-        .empty {
-            text-align: center;
-            padding: 55px 20px;
-            background: white;
-            border-radius: 14px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-        }
+    align-items: center;
+    justify-content: center;
 
-        .empty-icon {
-            font-size: 42px;
-            margin-bottom: 12px;
-        }
+    gap: 10px;
 
-        .empty h3 {
-            margin: 0 0 8px;
-            color: #374151;
-        }
+    background: linear-gradient(
+        135deg,
+        #e8f8ef,
+        #f1fff6
+    );
 
-        .empty p {
-            margin: 0;
-            color: #6b7280;
-        }
+    border: 1px solid #9adbb5;
 
-        /* Buttons */
+    color: #176b3a;
 
-        .actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-        }
+    padding: 15px 20px;
 
-        .button {
-            display: inline-block;
-            padding: 12px 20px;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: 0.2s;
-        }
+    border-radius: 14px;
 
-        .email-button {
-            background: #1565c0;
-        }
+    margin-bottom: 24px;
 
-        .email-button:hover {
-            background: #0d47a1;
-        }
+    text-align: center;
 
-        .back-button {
-            background: #374151;
-        }
+    font-weight: bold;
 
-        .back-button:hover {
-            background: #1f2937;
-        }
+    box-shadow:
+        0 7px 18px rgba(23, 107, 58, 0.08);
 
-        /* Responsive */
+    animation: successAnimation 0.4s ease;
+}
 
-        @media (max-width: 700px) {
+@keyframes successAnimation {
 
-            .container {
-                width: 94%;
-                margin: 25px auto;
-            }
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
 
-            .header {
-                padding: 24px;
-            }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-            .header h1 {
-                font-size: 25px;
-            }
+.success-icon {
+    width: 27px;
+    height: 27px;
 
-            .account-info {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-            .balance-box {
-                text-align: left;
-            }
+    border-radius: 50%;
 
-            .statement-card {
-                padding: 15px;
-            }
+    background: #198754;
 
-            .actions {
-                flex-direction: column;
-            }
+    color: white;
 
-            .button {
-                text-align: center;
-                width: 100%;
-            }
-        }
+    font-size: 15px;
 
-    </style>
+    flex-shrink: 0;
+}
+
+/* =========================
+   ERROR MESSAGE
+========================= */
+
+.error-message {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    background: #fff1f1;
+
+    border: 1px solid #efaaaa;
+
+    color: #a52a2a;
+
+    padding: 15px 20px;
+
+    border-radius: 14px;
+
+    margin-bottom: 24px;
+
+    text-align: center;
+
+    font-weight: bold;
+}
+
+/* =========================
+   ACCOUNT INFO
+========================= */
+
+.account-info {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(220px, 1fr));
+
+    gap: 16px;
+
+    margin-bottom: 28px;
+}
+
+.info-box {
+    background:
+        linear-gradient(
+            135deg,
+            #e7f8f8,
+            #f4fbff
+        );
+
+    padding: 19px;
+
+    border-radius: 17px;
+
+    border: 1px solid #d5edf2;
+
+    box-shadow:
+        0 6px 15px rgba(0, 90, 120, 0.06);
+
+    transition: 0.3s;
+}
+
+.info-box:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 10px 22px rgba(0, 90, 120, 0.10);
+}
+
+.info-label {
+    font-size: 12px;
+
+    color: #64748b;
+
+    margin-bottom: 7px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 17px;
+
+    font-weight: bold;
+
+    color: #17445a;
+
+    word-break: break-word;
+}
+
+/* =========================
+   EMAIL SECTION
+========================= */
+
+.email-section {
+    display: flex;
+
+    justify-content: flex-end;
+
+    margin-bottom: 22px;
+}
+
+.email-form {
+    margin: 0;
+}
+
+.email-btn {
+    border: none;
+
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            135deg,
+            #007c91,
+            #00a6a6
+        );
+
+    color: white;
+
+    padding: 14px 24px;
+
+    border-radius: 13px;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 8px 20px rgba(0, 124, 145, 0.25);
+
+    transition: 0.3s;
+}
+
+.email-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(0, 124, 145, 0.32);
+}
+
+.email-btn:active {
+    transform: translateY(0);
+}
+
+/* =========================
+   TABLE
+========================= */
+
+.table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border-radius: 17px;
+
+    border: 1px solid #e1ebef;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 780px;
+}
+
+thead {
+    background:
+        linear-gradient(
+            135deg,
+            #006d82,
+            #008fa3
+        );
+
+    color: white;
+}
+
+th {
+    padding: 16px 13px;
+
+    text-align: left;
+
+    font-size: 13px;
+
+    letter-spacing: 0.2px;
+}
+
+td {
+    padding: 15px 13px;
+
+    border-bottom: 1px solid #e6eef2;
+
+    font-size: 14px;
+
+    background: white;
+}
+
+tbody tr {
+    transition: 0.2s;
+}
+
+tbody tr:hover td {
+    background: #f3fbfd;
+}
+
+/* =========================
+   TRANSACTION TYPES
+========================= */
+
+.credit {
+    display: inline-block;
+
+    background: #e8f8ef;
+
+    color: #168548;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+.debit {
+    display: inline-block;
+
+    background: #fff0f0;
+
+    color: #c0392b;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+.amount {
+    font-weight: bold;
+}
+
+/* =========================
+   NO DATA
+========================= */
+
+.no-data {
+    text-align: center;
+
+    padding: 40px;
+
+    color: #64748b;
+
+    font-size: 16px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    text-align: center;
+
+    margin-top: 25px;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    body {
+        padding: 15px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .header {
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+    .brand {
+        font-size: 26px;
+    }
+
+    .title {
+        font-size: 26px;
+    }
+
+    .email-section {
+        justify-content: center;
+    }
+
+    .email-btn {
+        width: 100%;
+    }
+
+    .success-message,
+    .error-message {
+        font-size: 13px;
+    }
+
+}
+
+</style>
 
 </head>
 
@@ -308,235 +528,305 @@
 
 <div class="container">
 
-    <!-- Header -->
+    <!-- =========================
+         HEADER
+    ========================== -->
 
     <div class="header">
 
-        <h1>Mini Statement</h1>
+        <div class="brand">
+            🏦 Smart<span>Bank</span>
+        </div>
 
-        <p>View your latest 10 account transactions</p>
+        <a
+            href="${pageContext.request.contextPath}/dashboard"
+            class="back-btn">
+
+            ← Dashboard
+
+        </a>
 
     </div>
 
 
-    <!-- Email Success Message -->
+    <!-- =========================
+         MAIN CARD
+    ========================== -->
 
-    <c:if test="${param.emailSent == 'true'}">
+    <div class="card">
 
-        <div class="success">
+        <h1 class="title">
+            Mini Statement
+        </h1>
 
-            ✓ Mini statement email request sent successfully.
-
-        </div>
-
-    </c:if>
-
-
-    <!-- Account Information -->
-
-    <div class="account-info">
-
-        <div class="account-details">
-
-            <span class="account-label">
-                ACCOUNT NUMBER
-            </span>
-
-            <span class="account-number">
-                ${account.accountNumber}
-            </span>
-
-        </div>
+        <p class="subtitle">
+            View your latest account transactions
+            and send your statement securely to email.
+        </p>
 
 
-        <div class="balance-box">
+        <!-- =========================
+             SUCCESS MESSAGE
+        ========================== -->
 
-            <div class="balance-label">
-                CURRENT BALANCE
+        <c:if test="${not empty message}">
+
+            <div class="success-message">
+
+                <span class="success-icon">
+                    ✓
+                </span>
+
+                <span>
+                    ${message}
+                </span>
+
             </div>
 
-            <div class="balance">
-                ₹${account.balance}
+        </c:if>
+
+
+        <!-- =========================
+             ERROR MESSAGE
+        ========================== -->
+
+        <c:if test="${not empty error}">
+
+            <div class="error-message">
+
+                <span>
+                    ✕
+                </span>
+
+                <span>
+                    ${error}
+                </span>
+
+            </div>
+
+        </c:if>
+
+
+        <!-- =========================
+             ACCOUNT DETAILS
+        ========================== -->
+
+        <div class="account-info">
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Customer Name
+                </div>
+
+                <div class="info-value">
+                    ${customer.fullName}
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Account Number
+                </div>
+
+                <div class="info-value">
+                    ${account.accountNumber}
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    UPI ID
+                </div>
+
+                <div class="info-value">
+                    ${account.upiId}
+                </div>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <div class="info-label">
+                    Current Balance
+                </div>
+
+                <div class="info-value">
+                    ₹ ${account.balance}
+                </div>
+
             </div>
 
         </div>
 
-    </div>
+
+        <!-- =========================
+             SEND EMAIL BUTTON
+        ========================== -->
+
+        <div class="email-section">
+
+            <form
+                method="post"
+                action="${pageContext.request.contextPath}/mini-statement/email"
+                class="email-form">
+
+                <button
+                    type="submit"
+                    class="email-btn">
+
+                    📧 Send Statement to Email
+
+                </button>
+
+            </form>
+
+        </div>
 
 
-    <!-- Transactions -->
+        <!-- =========================
+             TRANSACTIONS
+        ========================== -->
 
-    <c:choose>
+        <div class="table-wrapper">
 
-        <c:when test="${not empty transactions}">
+            <c:choose>
 
-            <div class="statement-card">
-
-                <h2 class="statement-title">
-                    Recent Transactions
-                </h2>
-
-                <div class="table-wrapper">
+                <c:when test="${not empty transactions}">
 
                     <table>
 
                         <thead>
 
-                        <tr>
+                            <tr>
 
-                            <th>Date & Time</th>
+                                <th>
+                                    Date & Time
+                                </th>
 
-                            <th>Type</th>
+                                <th>
+                                    Type
+                                </th>
 
-                            <th>Amount</th>
+                                <th>
+                                    Description
+                                </th>
 
-                            <th>Description</th>
+                                <th>
+                                    Amount
+                                </th>
 
-                            <th>Balance After</th>
+                                <th>
+                                    Balance
+                                </th>
 
-                        </tr>
+                            </tr>
 
                         </thead>
 
 
                         <tbody>
 
-                        <c:forEach
+                            <c:forEach
                                 var="transaction"
                                 items="${transactions}">
 
-                            <tr>
+                                <tr>
 
-                                <td>
-                                    ${transaction.transactionDate}
-                                </td>
-
-
-                                <td>
-
-                                    <c:choose>
-
-                                        <c:when
-                                                test="${transaction.transactionType == 'DEBIT'}">
-
-                                            <span class="type-badge debit">
-                                                DEBIT
-                                            </span>
-
-                                        </c:when>
+                                    <td>
+                                        ${transaction.transactionDate}
+                                    </td>
 
 
-                                        <c:otherwise>
+                                    <td>
 
-                                            <span class="type-badge credit">
-                                                CREDIT
-                                            </span>
+                                        <c:choose>
 
-                                        </c:otherwise>
+                                            <c:when
+                                                test="${transaction.transactionType == 'CREDIT'}">
 
-                                    </c:choose>
+                                                <span class="credit">
+                                                    CREDIT
+                                                </span>
 
-                                </td>
-
-
-                                <td>
-
-                                    <c:choose>
-
-                                        <c:when
-                                                test="${transaction.transactionType == 'DEBIT'}">
-
-                                            <span class="amount debit-amount">
-                                                - ₹${transaction.amount}
-                                            </span>
-
-                                        </c:when>
+                                            </c:when>
 
 
-                                        <c:otherwise>
+                                            <c:otherwise>
 
-                                            <span class="amount credit-amount">
-                                                + ₹${transaction.amount}
-                                            </span>
+                                                <span class="debit">
+                                                    DEBIT
+                                                </span>
 
-                                        </c:otherwise>
+                                            </c:otherwise>
 
-                                    </c:choose>
+                                        </c:choose>
 
-                                </td>
-
-
-                                <td>
-                                    ${transaction.description}
-                                </td>
+                                    </td>
 
 
-                                <td>
+                                    <td>
+                                        ${transaction.description}
+                                    </td>
 
-                                    <span class="balance-after">
-                                        ₹${transaction.balanceAfterTransaction}
-                                    </span>
 
-                                </td>
+                                    <td class="amount">
 
-                            </tr>
+                                        ₹ ${transaction.amount}
 
-                        </c:forEach>
+                                    </td>
+
+
+                                    <td class="amount">
+
+                                        ₹ ${transaction.balanceAfterTransaction}
+
+                                    </td>
+
+                                </tr>
+
+                            </c:forEach>
 
                         </tbody>
 
                     </table>
 
-                </div>
-
-            </div>
-
-        </c:when>
+                </c:when>
 
 
-        <c:otherwise>
+                <c:otherwise>
 
-            <div class="empty">
+                    <div class="no-data">
 
-                <div class="empty-icon">
-                    📄
-                </div>
+                        No transactions available.
 
-                <h3>
-                    No transactions yet
-                </h3>
+                    </div>
 
-                <p>
-                    Your transaction history will appear here.
-                </p>
+                </c:otherwise>
 
-            </div>
+            </c:choose>
 
-        </c:otherwise>
+        </div>
 
-    </c:choose>
+    </div>
 
 
-    <!-- Actions -->
+    <!-- =========================
+         FOOTER
+    ========================== -->
 
-    <div class="actions">
+    <div class="footer">
 
-        <a
-                href="${pageContext.request.contextPath}/mini-statement/email"
-                class="button email-button">
-
-            📧 Send Statement to Email
-
-        </a>
-
-
-        <a
-                href="${pageContext.request.contextPath}/dashboard"
-                class="button back-button">
-
-            ← Back to Dashboard
-
-        </a>
+        SmartBank © 2026
+        &nbsp;|&nbsp;
+        Secure • Simple • Smart
 
     </div>
 

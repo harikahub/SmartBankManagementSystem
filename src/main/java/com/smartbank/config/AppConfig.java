@@ -23,6 +23,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import jakarta.persistence.EntityManagerFactory;
+
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
@@ -104,8 +106,21 @@ public class AppConfig implements WebMvcConfigurer {
 
         emf.setJpaVendorAdapter(vendorAdapter);
 
+        /*
+         * Important:
+         * Force Spring to expose the standard Jakarta
+         * EntityManagerFactory interface.
+         *
+         * This avoids the conflict between Hibernate's
+         * SessionFactory and Spring's EntityManagerFactoryInfo
+         * proxy interfaces.
+         */
+        emf.setEntityManagerFactoryInterface(
+                EntityManagerFactory.class
+        );
+
         Properties properties = new Properties();
-        
+
         properties.put(
                 "hibernate.dialect",
                 "org.hibernate.dialect.MariaDBDialect"
@@ -133,13 +148,13 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Bean
     public JpaTransactionManager transactionManager(
-            LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+            EntityManagerFactory entityManagerFactory) {
 
         JpaTransactionManager transactionManager =
                 new JpaTransactionManager();
 
         transactionManager.setEntityManagerFactory(
-                entityManagerFactory.getObject()
+                entityManagerFactory
         );
 
         return transactionManager;
@@ -161,7 +176,8 @@ public class AppConfig implements WebMvcConfigurer {
         mailSender.setUsername(mailUsername);
         mailSender.setPassword(mailPassword);
 
-        Properties props = mailSender.getJavaMailProperties();
+        Properties props =
+                mailSender.getJavaMailProperties();
 
         props.put(
                 "mail.transport.protocol",

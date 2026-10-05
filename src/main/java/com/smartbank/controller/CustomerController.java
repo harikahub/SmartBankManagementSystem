@@ -1,3 +1,4 @@
+
 package com.smartbank.controller;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class CustomerController {
         this.transactionService = transactionService;
     }
 
+
     // =========================
     // REGISTER
     // =========================
@@ -50,7 +52,6 @@ public class CustomerController {
             @RequestParam(value = "panNumber", required = false) String panNumber,
             Model model) {
 
-        // Check whether email already exists
         Customer existingCustomer =
                 customerService.findByEmail(email);
 
@@ -63,7 +64,6 @@ public class CustomerController {
             return "register";
         }
 
-        // Create customer
         Customer customer = new Customer();
 
         customer.setFullName(fullName);
@@ -77,10 +77,10 @@ public class CustomerController {
         Customer savedCustomer =
                 customerService.register(customer);
 
-        // Create bank account
         Account account = new Account();
 
-        account.setAccountNumber(generateAccountNumber());
+        account.setAccountNumber(
+                generateAccountNumber());
 
         account.setUpiId(
                 generateUpiId(email));
@@ -92,10 +92,11 @@ public class CustomerController {
         Account savedAccount =
                 accountService.createAccount(account);
 
-        // Connect account with customer
         savedCustomer.setAccount(savedAccount);
 
-        model.addAttribute("email", email);
+        model.addAttribute(
+                "email",
+                email);
 
         return "verify-otp";
     }
@@ -112,7 +113,9 @@ public class CustomerController {
             Model model) {
 
         boolean verified =
-                customerService.verifyCustomer(email, otp);
+                customerService.verifyCustomer(
+                        email,
+                        otp);
 
         if (!verified) {
 
@@ -132,6 +135,40 @@ public class CustomerController {
 
 
     // =========================
+    // RESEND REGISTRATION OTP
+    // =========================
+
+    @PostMapping("/resend-registration-otp")
+    public String resendRegistrationOtp(
+            @RequestParam("email") String email,
+            Model model) {
+
+        boolean sent =
+                customerService.resendRegistrationOtp(
+                        email);
+
+        model.addAttribute(
+                "email",
+                email);
+
+        if (!sent) {
+
+            model.addAttribute(
+                    "error",
+                    "Unable to resend OTP. Please try again.");
+
+            return "verify-otp";
+        }
+
+        model.addAttribute(
+                "message",
+                "A new OTP has been sent to your email.");
+
+        return "verify-otp";
+    }
+
+
+    // =========================
     // LOGIN
     // =========================
 
@@ -142,7 +179,9 @@ public class CustomerController {
             Model model) {
 
         boolean success =
-                customerService.login(email, password);
+                customerService.login(
+                        email,
+                        password);
 
         if (!success) {
 
@@ -153,9 +192,9 @@ public class CustomerController {
             return "login";
         }
 
-        // Generate OTP and send to email
         boolean otpGenerated =
-                customerService.generateLoginOtp(email);
+                customerService.generateLoginOtp(
+                        email);
 
         if (!otpGenerated) {
 
@@ -166,13 +205,10 @@ public class CustomerController {
             return "login";
         }
 
-        // Send email to OTP page
         model.addAttribute(
                 "email",
                 email);
 
-        // IMPORTANT:
-        // Your JSP file is verify-login-otp.jsp
         return "verify-login-otp";
     }
 
@@ -189,7 +225,9 @@ public class CustomerController {
             Model model) {
 
         boolean verified =
-                customerService.verifyLoginOtp(email, otp);
+                customerService.verifyLoginOtp(
+                        email,
+                        otp);
 
         if (!verified) {
 
@@ -216,7 +254,6 @@ public class CustomerController {
             return "login";
         }
 
-        // Store customer in session
         session.setAttribute(
                 "customer",
                 customer);
@@ -235,13 +272,13 @@ public class CustomerController {
             Model model) {
 
         Customer customer =
-                (Customer) session.getAttribute("customer");
+                (Customer) session.getAttribute(
+                        "customer");
 
         if (customer == null) {
             return "redirect:/login";
         }
 
-        // Refresh customer from database
         Customer currentCustomer =
                 customerService.findByEmail(
                         customer.getEmail());
@@ -251,21 +288,20 @@ public class CustomerController {
             return "redirect:/login";
         }
 
-        // Update session with latest customer data
         session.setAttribute(
                 "customer",
                 currentCustomer);
 
-        // Get recent transactions
         List<BankTransaction> recentTransactions =
                 transactionService.getMiniStatement(
                         currentCustomer.getAccount().getId());
 
-        // Dashboard should show only latest 3
         if (recentTransactions.size() > 3) {
 
             recentTransactions =
-                    recentTransactions.subList(0, 3);
+                    recentTransactions.subList(
+                            0,
+                            3);
         }
 
         model.addAttribute(
@@ -300,7 +336,10 @@ public class CustomerController {
 
         long number =
                 1000000000L
-                + (long) (random.nextDouble() * 9000000000L);
+                + (long) (
+                    random.nextDouble()
+                    * 9000000000L
+                );
 
         return String.valueOf(number);
     }
@@ -310,7 +349,8 @@ public class CustomerController {
     // UPI ID
     // =========================
 
-    private String generateUpiId(String email) {
+    private String generateUpiId(
+            String email) {
 
         String username =
                 email.substring(
@@ -320,4 +360,5 @@ public class CustomerController {
         return username.toLowerCase()
                 + "@smartbank";
     }
+
 }
