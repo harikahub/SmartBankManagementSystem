@@ -76,17 +76,17 @@ The admin module provides:
 
 ## 🛠️ Tech Stack
 
-| Layer          | Technologies                |
-| -------------- | --------------------------- |
-| **Language**   | Java                        |
-| **Web Layer**  | Spring MVC, JSP             |
-| **Backend**    | Spring ORM, Spring Data JPA |
-| **ORM**        | Hibernate                   |
-| **Database**   | MySQL                       |
-| **Frontend**   | HTML5, CSS3                 |
-| **Build Tool** | Maven                       |
-| **Server**     | Apache Tomcat 10            |
-| **IDE**        | Eclipse                     |
+| Layer | Technologies |
+|---|---|
+| **Language** | Java |
+| **Web Layer** | Spring MVC, JSP |
+| **Backend** | Spring ORM, Spring Data JPA |
+| **ORM** | Hibernate |
+| **Database** | MySQL |
+| **Frontend** | HTML5, CSS3 |
+| **Build Tool** | Maven |
+| **Server** | Apache Tomcat 10 |
+| **IDE** | Eclipse |
 
 ---
 
@@ -210,6 +210,44 @@ git clone https://github.com/harikahub/SmartBankManagementSystem.git
 * 📈 Monthly & annual banking reports
 * 🇮🇳 Indian currency formatting
 * 🖥️ Responsive banking dashboard
+
+---
+
+## 📸 Screenshots
+
+### 🏠 Home & Authentication
+
+![SmartBank Home - Top](screenshots/home-top.png)
+
+![SmartBank Home - Bottom](screenshots/home-bottom.png)
+
+![New Account Registration](screenshots/register.png)
+
+![Registration OTP Verification](screenshots/register-otp.png)
+
+![Customer Login](screenshots/login.png)
+
+![Login OTP Verification](screenshots/login-otp.png)
+
+### 👤 Customer Banking
+
+![Customer Dashboard](screenshots/dashboard.png)
+
+![Fund Transfer](screenshots/fund-transfer.png)
+
+![Mini Statement](screenshots/transactions.png)
+
+![Loan Application](screenshots/loan-apply.png)
+
+![Loan Status](screenshots/loan-status.png)
+
+### 👨‍💼 Administration
+
+![Admin Login](screenshots/admin-login.png)
+
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+![Admin Reports](screenshots/admin-reports.png)
 
 ---
 
